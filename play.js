@@ -2,12 +2,14 @@
 exports.__esModule = true;
 var CharStream_1 = require("./CharStream");
 var Lexical_1 = require("./Lexical");
+var Parser_1 = require("./Parser");
 function compileAndRun(program) {
     console.log("resource:");
     console.log(program);
     // lexical Analysis
     console.log("\n Lexical Analyze:\n");
-    var tokenizer = new Lexical_1.Lexical(new CharStream_1.CharStream(program)).getAToken();
+    var tokenizer = new Lexical_1.Lexical(new CharStream_1.CharStream(program));
+    new Parser_1.Parser(tokenizer).parseProg();
 }
 // 读文件 
 var process = require("process");

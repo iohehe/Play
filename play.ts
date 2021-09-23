@@ -1,5 +1,6 @@
 import {CharStream} from "./CharStream";
 import {Lexical} from "./Lexical";
+import {Parser} from "./Parser";
 
 function compileAndRun(program:string) {
     console.log("resource:");
@@ -7,7 +8,8 @@ function compileAndRun(program:string) {
 
     // lexical Analysis
     console.log("\n Lexical Analyze:\n");
-    let tokenizer =new Lexical(new CharStream(program)).getAToken();
+    let tokenizer =new Lexical(new CharStream(program));
+    new Parser(tokenizer).parseProg();
 }
 
 

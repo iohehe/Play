@@ -12,12 +12,6 @@ export class Lexical {
 
     constructor(stream:CharStream){
         this.stream = stream;
-        let t = this.peek();
-        while(t.kind!=TokenKind.EOF)
-        {
-            console.log(t.text);
-            t = this.next();
-        }
     }
 
     public peek():Token {

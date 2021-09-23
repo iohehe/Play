@@ -6,11 +6,6 @@ var Lexical = /** @class */ (function () {
     function Lexical(stream) {
         this.tokens = new Array();
         this.stream = stream;
-        var t = this.peek();
-        while (t.kind != Token_1.TokenKind.EOF) {
-            console.log(t.text);
-            t = this.next();
-        }
     }
     Lexical.prototype.peek = function () {
         var t = this.tokens[0];
@@ -30,7 +25,7 @@ var Lexical = /** @class */ (function () {
         }
     };
     Lexical.prototype.getAToken = function () {
-        console.log("\n[+] GET a token\n");
+        //console.log("\n[+] GET a token\n");
         this.skipWhiteSpaces();
         // stream 空了
         if (this.stream.eof()) {

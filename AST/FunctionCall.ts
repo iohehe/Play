@@ -14,7 +14,7 @@ export class FunctionCall extends Statement {
     }
 
     public dump(prefix:string):void {
-        console.log(prefix + "FunctionCall" + this.name + (this.definition != null ? ", resolved" : ", not resolved"));
+        console.log(prefix + "FunctionCall " + this.name + (this.definition != null ? ", resolved" : ", not resolved"));
         this.parameters.forEach(x => console.log(prefix + "\t" + "Parameter: " + x));
     }
 

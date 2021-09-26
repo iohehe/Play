@@ -9,7 +9,8 @@ function compileAndRun(program) {
     // lexical Analysis
     console.log("\n Lexical Analyze:\n");
     var tokenizer = new Lexical_1.Lexical(new CharStream_1.CharStream(program));
-    new Parser_1.Parser(tokenizer).parseProg();
+    var prog = new Parser_1.Parser(tokenizer).parseProg();
+    prog.dump("~~~~.>:");
 }
 // 读文件 
 var process = require("process");

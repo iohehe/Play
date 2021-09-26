@@ -79,7 +79,7 @@ var Lexical = /** @class */ (function () {
         }
         //
         if (Lexical.KeyWords.has(token.text)) {
-            token.kind = Token_1.TokenKind.Identifier;
+            token.kind = Token_1.TokenKind.KeyWord;
         }
         //console.log(token);
         return token;

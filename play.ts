@@ -9,7 +9,8 @@ function compileAndRun(program:string) {
     // lexical Analysis
     console.log("\n Lexical Analyze:\n");
     let tokenizer =new Lexical(new CharStream(program));
-    new Parser(tokenizer).parseProg();
+    let prog = new Parser(tokenizer).parseProg();
+    prog.dump("~~~~.>:");
 }
 
 

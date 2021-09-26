@@ -13,7 +13,7 @@ export class FunctionDecl extends Statement {
     }
 
     public dump(prefix: string):void {
-        console.log(prefix + "FunctionBody");
+        console.log(prefix + "FunctionDecl");
 
         this.body.dump(prefix+"\t");
     }

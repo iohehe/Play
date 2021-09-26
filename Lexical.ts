@@ -103,7 +103,7 @@ export class Lexical {
         //
         if (Lexical.KeyWords.has(token.text))
         {
-            token.kind = TokenKind.Identifier;
+            token.kind = TokenKind.KeyWord;
         }
 
         //console.log(token);

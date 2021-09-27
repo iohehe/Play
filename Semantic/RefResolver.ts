@@ -1,16 +1,17 @@
 import { FunctionCall } from "../AST/FunctionCall";
-import { FunctionDecl } from "../AST/FUnctionDecl";
+import { FunctionDecl } from "../AST/FunctionDecl";
+import { FunctionBody } from "../AST/FunctionBody";
 
 import {Prog} from "../AST/Prog";
 import {ASTVisitor} from "./ASTVisitor";
 
 export class RefResolver extends ASTVisitor {
     prog: Prog|null = null;
+
     visitProg(prog:Prog):void {
         console.log("Begin to dereference...");
 
         this.prog = prog;
-        
         for (let x of prog.stmts) 
         {
             let function_call = x as FunctionCall;
@@ -27,6 +28,15 @@ export class RefResolver extends ASTVisitor {
 
     }
 
+    visitFunctionBody(function_body: FunctionBody): any {
+        if (this.prog != null)
+        {
+            for (let x of function_body.stmts) 
+            {
+                return this.resolveFunctionCall(this.prog, x);
+            }
+        }
+    }
 
     private resolveFunctionCall(prog:Prog, function_call:FunctionCall) {
         let function_decl = this.findFunctionDecl(prog, function_call.name);
@@ -36,11 +46,16 @@ export class RefResolver extends ASTVisitor {
         }
         else
         {
-
+            if (function_call.name != "println") //非系统函数， 又解不了引用的
+            {
+                console.log("NameError: function "+function_call.name+" not found");
+                process.exit(0);
+            }
         }
     }
 
 
+    // find function decl : 由resolve call时调用,在整个prog中找decl
     private findFunctionDecl(prog:Prog, name:string):FunctionDecl|null {
         for (let x of prog?.stmts) // 搜索prog中所有的stmt
         {
@@ -49,7 +64,6 @@ export class RefResolver extends ASTVisitor {
             {
                 return function_decl;
             }
-            
         }
         return null; //没有找到对应的函数体
     } 

@@ -38,14 +38,27 @@ var RefResolver = /** @class */ (function (_super) {
             }
         }
     };
+    RefResolver.prototype.visitFunctionBody = function (function_body) {
+        if (this.prog != null) {
+            for (var _i = 0, _a = function_body.stmts; _i < _a.length; _i++) {
+                var x = _a[_i];
+                return this.resolveFunctionCall(this.prog, x);
+            }
+        }
+    };
     RefResolver.prototype.resolveFunctionCall = function (prog, function_call) {
         var function_decl = this.findFunctionDecl(prog, function_call.name);
         if (function_decl != null) {
             function_call.definition = function_decl;
         }
         else {
+            if (function_call.name != "printlna") {
+                console.log("NameError: function " + function_call.name + " not found");
+                process.exit(0);
+            }
         }
     };
+    // find function decl : 由resolve call时调用,在整个prog中找decl
     RefResolver.prototype.findFunctionDecl = function (prog, name) {
         for (var _i = 0, _a = prog === null || prog === void 0 ? void 0 : prog.stmts; _i < _a.length; _i++) {
             var x = _a[_i];

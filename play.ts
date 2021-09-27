@@ -1,6 +1,7 @@
 import {CharStream} from "./CharStream";
 import {Lexical} from "./Lexical";
 import {Parser} from "./Parser";
+import {RefResolver} from "./Semantic/RefResolver";
 
 function compileAndRun(program:string) {
     console.log("resource:");
@@ -9,8 +10,14 @@ function compileAndRun(program:string) {
     // lexical Analysis
     console.log("\n Lexical Analyze:\n");
     let tokenizer =new Lexical(new CharStream(program));
+
+    // Syntax Analysis
     let prog = new Parser(tokenizer).parseProg();
     prog.dump("~~~~.>:");
+
+    // Semantic Analysis
+    new RefResolver().visitProg(prog);
+    prog.dump("---------..>:");
 }
 
 

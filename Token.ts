@@ -2,8 +2,8 @@ export enum TokenKind {
     KeyWord,
     Identifier,
     StringLiteral,
-    IntegerLiteral,
     Seperator,
+    IntegerLiteral,
     Operator,
     EOF
 };

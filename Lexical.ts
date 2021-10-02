@@ -65,7 +65,79 @@ export class Lexical {
                 return this.parseSeperator();
            }
 
+           //4. IntegerLiteral
+           else if (ch >= '0' && ch <= '9')
+           {
+               return this.parseInteger();
+           }
+
+           //5. Binary Operator:  +
+            else if (ch == "+")
+            {
+                //console.log("find a binary operator +");
+                
+                return this.parseBinOP_Plus();
+            }           
+
+            //6. Binary Operator: *
+            else if (ch == "*")
+            {
+                return this.parseBinOP_Multi();
+            }
+            else
+            {
+                console.log("[!!!!] unknow pattern meeting: "+ ch);
+                this.stream.next(); // pass the unknow character in the stream
+                //return this.getAToken(); // 下一轮推token
+                process.exit(1);
+            }
+
         }
+    }
+
+
+    // ===== scanning binary operators
+    //
+    //*
+    public parseBinOP_Multi():Token {
+        let token = {kind: TokenKind.Operator, text: ""};
+        this.stream.next();
+        let ch1 = this.stream.peek();
+        
+        if (ch1 == "=") // *=
+        {
+            token.text = "*=";
+            this.stream.next();
+        }
+        //妹有**
+        else
+        {
+            token.text = "*";
+        }
+        return token;
+    }
+    //+
+    public parseBinOP_Plus():Token {
+        let token = {kind: TokenKind.Operator, text:""};
+        // plus: + , +=, ++
+        this.stream.next();
+        let ch1 = this.stream.peek();
+        if (ch1 == "+") //++
+        {
+            token.text = "++";
+            this.stream.next(); // push it
+        }
+        else if(ch1 == "=") //+=
+        {
+            token.text = "+=";
+            this.stream.next(); // push it 
+        }
+        else // + only
+        {
+            token.text = "+";
+        }
+        // in here make sure the stream's current char is not belong to the plus operator including(+, +=, ++)
+        return token;
     }
 
 
@@ -109,6 +181,17 @@ export class Lexical {
         //console.log(token);
         return token;
     }
+
+    public parseInteger():Token {
+        let token = {kind: TokenKind.IntegerLiteral, text: ""};
+        token.text += this.stream.next();
+        while(this.stream.peek() >= "0" && this.stream.peek() <= "9")  // TODO: 考虑靠头为0的情况
+        {
+            token.text += this.stream.next();
+        }
+        return token;
+    }
+
 
     public skipWhiteSpaces(): void{
         while (this.isWhiteSpaces(this.stream.peek())&&!this.stream.eof())

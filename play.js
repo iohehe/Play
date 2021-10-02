@@ -3,19 +3,19 @@ exports.__esModule = true;
 var CharStream_1 = require("./CharStream");
 var Lexical_1 = require("./Lexical");
 var Parser_1 = require("./Parser");
-var RefResolver_1 = require("./Semantic/RefResolver");
 function compileAndRun(program) {
     console.log("resource:");
     console.log(program);
     // lexical Analysis
     console.log("\n Lexical Analyze:\n");
+    //let tokenizer =new Lexical(new CharStream(program));
     var tokenizer = new Lexical_1.Lexical(new CharStream_1.CharStream(program));
     // Syntax Analysis
     var prog = new Parser_1.Parser(tokenizer).parseProg();
     prog.dump("~~~~.>:");
     // Semantic Analysis
-    new RefResolver_1.RefResolver().visitProg(prog);
-    prog.dump("---------..>:");
+    //new RefResolver().visitProg(prog);
+    //prog.dump("---------..>:");
 }
 // 读文件 
 var process = require("process");

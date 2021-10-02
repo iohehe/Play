@@ -52,7 +52,8 @@ var RefResolver = /** @class */ (function (_super) {
             function_call.definition = function_decl;
         }
         else {
-            if (function_call.name != "printlna") {
+            if (function_call.name != "println") //非系统函数， 又解不了引用的
+             {
                 console.log("NameError: function " + function_call.name + " not found");
                 process.exit(0);
             }

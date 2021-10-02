@@ -49,7 +49,67 @@ var Lexical = /** @class */ (function () {
                 //console.log("[+] is a Seperators");
                 return this.parseSeperator();
             }
+            //4. IntegerLiteral
+            else if (ch >= '0' && ch <= '9') {
+                return this.parseInteger();
+            }
+            //5. Binary Operator:  +
+            else if (ch == "+") {
+                //console.log("find a binary operator +");
+                return this.parseBinOP_Plus();
+            }
+            //6. Binary Operator: *
+            else if (ch == "*") {
+                return this.parseBinOP_Multi();
+            }
+            else {
+                console.log("[!!!!] unknow pattern meeting: " + ch);
+                this.stream.next(); // pass the unknow character in the stream
+                //return this.getAToken(); // 下一轮推token
+                process.exit(1);
+            }
         }
+    };
+    // ===== scanning binary operators
+    //
+    //*
+    Lexical.prototype.parseBinOP_Multi = function () {
+        var token = { kind: Token_1.TokenKind.Operator, text: "" };
+        this.stream.next();
+        var ch1 = this.stream.peek();
+        if (ch1 == "=") // *=
+         {
+            token.text = "*=";
+            this.stream.next();
+        }
+        //妹有**
+        else {
+            token.text = "*";
+        }
+        return token;
+    };
+    //+
+    Lexical.prototype.parseBinOP_Plus = function () {
+        var token = { kind: Token_1.TokenKind.Operator, text: "" };
+        // plus: + , +=, ++
+        this.stream.next();
+        var ch1 = this.stream.peek();
+        if (ch1 == "+") //++
+         {
+            token.text = "++";
+            this.stream.next(); // push it
+        }
+        else if (ch1 == "=") //+=
+         {
+            token.text = "+=";
+            this.stream.next(); // push it 
+        }
+        else // + only
+         {
+            token.text = "+";
+        }
+        // in here make sure the stream's current char is not belong to the plus operator including(+, +=, ++)
+        return token;
     };
     Lexical.prototype.parseSeperator = function () {
         var token = { kind: Token_1.TokenKind.Seperator, text: "" };
@@ -82,6 +142,15 @@ var Lexical = /** @class */ (function () {
             token.kind = Token_1.TokenKind.KeyWord;
         }
         //console.log(token);
+        return token;
+    };
+    Lexical.prototype.parseInteger = function () {
+        var token = { kind: Token_1.TokenKind.IntegerLiteral, text: "" };
+        token.text += this.stream.next();
+        while (this.stream.peek() >= "0" && this.stream.peek() <= "9") // TODO: 考虑靠头为0的情况
+         {
+            token.text += this.stream.next();
+        }
         return token;
     };
     Lexical.prototype.skipWhiteSpaces = function () {

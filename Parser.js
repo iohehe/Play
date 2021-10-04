@@ -9,6 +9,8 @@ var IntegerLiteral_1 = require("./AST/IntegerLiteral");
 var Prog_1 = require("./AST/Prog");
 var BinaryExp_1 = require("./AST/BinaryExp");
 var ExpressionStatement_1 = require("./AST/ExpressionStatement");
+var VariableDecl_1 = require("./AST/VariableDecl");
+var Variable_1 = require("./AST//Variable");
 /**
  *  @version: 0.2
  *
@@ -33,8 +35,9 @@ var Parser = /** @class */ (function () {
          *  操作符优先级
          */
         this.op_prec = new Map([
-            ['+', 1],
-            ['*', 2]
+            ['=', 2],
+            ['+', 3],
+            ['*', 4]
         ]);
         this.tokenizer = tokenizer;
     }
@@ -65,7 +68,7 @@ var Parser = /** @class */ (function () {
     };
     /**
      * Parsing Statement
-     * stmt :=  FunctionCall|FuntctionDecl|ExpressionStmt.
+     * stmt :=  FunctionCall|FuntctionDecl|ExpressionStmt|AssigmentStmt.
      * @returns
      */
     Parser.prototype.parsingStatement = function () {
@@ -81,23 +84,64 @@ var Parser = /** @class */ (function () {
                 return stmt;
             }
         }
-        // parsing Fucntion Call
-        else if (token.kind == Token_1.TokenKind.Identifier) //这个else不要用if else 因为function后边跟的也是identifier
-         {
-            console.log("[!] Begin to parse function Call...");
-            stmt = this.parseFunctionCall();
-            //stmt.dump("-------> function call -------> ")
-            if (stmt) {
-                return stmt;
-            }
+        // parsing VariableDecl
+        else if (token.kind == Token_1.TokenKind.KeyWord && token.text == "let") {
+            console.log("[!] Begin to parse variable decl...");
+            return this.parseVariableDecl();
         }
-        else if (token.kind == Token_1.TokenKind.IntegerLiteral) {
-            console.log("[!] Begin to parsing a binary operate...");
+        else if (token.kind == Token_1.TokenKind.Identifier || token.kind == Token_1.TokenKind.IntegerLiteral || token.kind == Token_1.TokenKind.StringLiteral) {
+            console.log("[!] Begin to parsing expressions...");
             return this.parseExpressionStmt();
         }
         else {
             console.log("[!!!!] Can not recoggnize a expression starting with: " + this.tokenizer.peek().text);
             return null;
+        }
+    };
+    // variableDec := "let" Identifier typeAnnotation? ("=" singleExpression)';'.
+    // typeAnnotation := ":" typeName.
+    Parser.prototype.parseVariableDecl = function () {
+        this.tokenizer.next(); // 跳过 'let'
+        var t = this.tokenizer.next();
+        if (t.kind == Token_1.TokenKind.Identifier) // t在这个块里不动，因为记录了标识符的名字
+         {
+            // decl拿三部分: name, type, 初始化exp
+            var var_name = t.text;
+            // 下推 type
+            var var_type = 'any';
+            var init = null;
+            var t1 = this.tokenizer.peek(); // 拿 identifier的下一个
+            //t1 三种可能，";"结束， “=” 开始初始化赋值， ":"  进行类型标注 
+            // 判断类型标注信息
+            if (t1.text == ":") //类型标注
+             {
+                this.tokenizer.next(); // 跳过":"
+                t1 = this.tokenizer.peek(); //拿到类型
+                if (t1.kind == Token_1.TokenKind.Identifier) {
+                    var_type = t1.text; //这里没有判断类型的正确性，可能需要解引用时判断可能是非基础类型
+                    this.tokenizer.next(); //推过
+                    t1 = this.tokenizer.peek();
+                }
+                else {
+                    console.log("[SYNAX ERROR]: parsing type annotation in variableDecl");
+                    return null;
+                }
+            }
+            // 判断初始表达式
+            if (t1.text == "=") {
+                this.tokenizer.next();
+                init = this.parseExpression();
+            }
+            t1 = this.tokenizer.peek(); // 这事块外的t1
+            if (t1.text == ";") // stmt终结
+             {
+                this.tokenizer.next(); //推过;
+                return new VariableDecl_1.variableDecl(var_name, var_type, init);
+            }
+            else {
+                console.log("[SYNTAX ERROR] Excepting ; at the end of variable declaration, while we meet " + t1.text);
+                return null;
+            }
         }
     };
     // expressionStmt := (expression)+;.
@@ -112,7 +156,7 @@ var Parser = /** @class */ (function () {
                 return new ExpressionStatement_1.ExpressionStatement(exp);
             }
             else {
-                console.log("[SYNTAX ERROR] 没有分号");
+                console.log("[SYNTAX ERROR] 语句缺少分号");
                 process.exit(1);
             }
         }
@@ -168,16 +212,24 @@ var Parser = /** @class */ (function () {
     };
     /**
      *  Get a 基础表达式
-     *  primary := IntegerLiteral|StringLiteral|DecimalLiteral
+     *  primary := IntegerLiteral|StringLiteral|DecimalLiteral|FunctionCall|Variable
      *  @returns
      */
     Parser.prototype.parsePrimary = function () {
         var t = this.tokenizer.peek();
         console.log("parsing primary: " + t.text);
         // identifier
+        // 以identifer开头，可能是function call 也肯能是variable, 所以要想后多看一个Token是不是"(", 相当于局部使用了LL(2)算法
         if (t.kind == Token_1.TokenKind.Identifier) {
-            this.tokenizer.next(); //推出改token    
-            return null; //!TODO
+            if (this.tokenizer.peek2().text == '(') {
+                console.log("function call.........");
+                return this.parseFunctionCall();
+            }
+            else {
+                console.log("variable assignment........");
+                this.tokenizer.next(); //推出改token    
+                return new Variable_1.Variable(t.text);
+            }
         }
         // integer 
         else if (t.kind == Token_1.TokenKind.IntegerLiteral) {
@@ -187,6 +239,7 @@ var Parser = /** @class */ (function () {
         // TODO: decimal & string & ()
         else {
             console.log("木有");
+            console.log(t.text);
             return null;
         }
     };

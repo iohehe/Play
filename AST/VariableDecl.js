@@ -15,20 +15,29 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.FunctionDecl = void 0;
-var DEcl_1 = require("./DEcl");
-// functionDecl ::= KeyWord Identifier (parameterList?) functionBody
-var FunctionDecl = /** @class */ (function (_super) {
-    __extends(FunctionDecl, _super);
-    function FunctionDecl(name, body) {
+exports.variableDecl = void 0;
+var Decl_1 = require("./Decl");
+/**
+ *  变量声明节点
+ *  记录变量名，类型和初始值
+ */
+var variableDecl = /** @class */ (function (_super) {
+    __extends(variableDecl, _super);
+    function variableDecl(name, var_type, init) {
         var _this = _super.call(this, name) || this;
-        _this.body = body;
+        _this.var_type = var_type;
+        _this.init = init;
         return _this;
     }
-    FunctionDecl.prototype.dump = function (prefix) {
-        console.log(prefix + "FunctionDecl" + this.name);
-        this.body.dump(prefix + "\t");
+    variableDecl.prototype.dump = function (prefix) {
+        console.log(prefix + "VariableDecl " + this.name + ", type: " + this.var_type);
+        if (this.init == null) {
+            console.log(prefix + "no initialization.");
+        }
+        else {
+            this.init.dump(prefix + "   ");
+        }
     };
-    return FunctionDecl;
-}(DEcl_1.Decl));
-exports.FunctionDecl = FunctionDecl;
+    return variableDecl;
+}(Decl_1.Decl));
+exports.variableDecl = variableDecl;

@@ -12,9 +12,20 @@ function compileAndRun(program:string) {
 
     //let tokenizer =new Lexical(new CharStream(program));
 
-    let tokenizer = new Lexical(new CharStream(program));
+    /*
+    let scanner = new Lexical(new CharStream(program));
+    // scanning test
+    let t = scanner.peek();
+    while(t.kind!=TokenKind.EOF && t.text!="")
+    {
+        console.log(scanner.next().text);
+        console.log(scanner.peek().kind);
+        t = scanner.peek();
+    }
+    */
 
     // Syntax Analysis
+    let tokenizer = new Lexical(new CharStream(program));
     let prog = new Parser(tokenizer).parseProg();
 
     prog.dump("~~~~.>:");
@@ -29,6 +40,7 @@ function compileAndRun(program:string) {
 // 读文件 
 import * as process from 'process'
 import { TokenKind } from "./Token";
+import { exit } from "process";
 
 if (process.argv.length<3)
 {

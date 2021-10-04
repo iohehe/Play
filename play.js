@@ -9,8 +9,19 @@ function compileAndRun(program) {
     // lexical Analysis
     console.log("\n Lexical Analyze:\n");
     //let tokenizer =new Lexical(new CharStream(program));
-    var tokenizer = new Lexical_1.Lexical(new CharStream_1.CharStream(program));
+    /*
+    let scanner = new Lexical(new CharStream(program));
+    // scanning test
+    let t = scanner.peek();
+    while(t.kind!=TokenKind.EOF && t.text!="")
+    {
+        console.log(scanner.next().text);
+        console.log(scanner.peek().kind);
+        t = scanner.peek();
+    }
+    */
     // Syntax Analysis
+    var tokenizer = new Lexical_1.Lexical(new CharStream_1.CharStream(program));
     var prog = new Parser_1.Parser(tokenizer).parseProg();
     prog.dump("~~~~.>:");
     // Semantic Analysis

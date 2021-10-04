@@ -15,20 +15,22 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.FunctionDecl = void 0;
-var DEcl_1 = require("./DEcl");
-// functionDecl ::= KeyWord Identifier (parameterList?) functionBody
-var FunctionDecl = /** @class */ (function (_super) {
-    __extends(FunctionDecl, _super);
-    function FunctionDecl(name, body) {
-        var _this = _super.call(this, name) || this;
-        _this.body = body;
+exports.Variable = void 0;
+var Expression_1 = require("./Expression");
+/**
+ *  变量引用
+ */
+var Variable = /** @class */ (function (_super) {
+    __extends(Variable, _super);
+    function Variable(name) {
+        var _this = _super.call(this) || this;
+        _this.decl = null;
+        _this.name = name;
         return _this;
     }
-    FunctionDecl.prototype.dump = function (prefix) {
-        console.log(prefix + "FunctionDecl" + this.name);
-        this.body.dump(prefix + "\t");
+    Variable.prototype.dump = function (prefix) {
+        console.log(prefix + "Variable: " + this.name + (this.decl != null ? ", resolved" : ", not resolved"));
     };
-    return FunctionDecl;
-}(DEcl_1.Decl));
-exports.FunctionDecl = FunctionDecl;
+    return Variable;
+}(Expression_1.Expression));
+exports.Variable = Variable;

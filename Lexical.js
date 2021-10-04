@@ -15,6 +15,14 @@ var Lexical = /** @class */ (function () {
         }
         return t;
     };
+    Lexical.prototype.peek2 = function () {
+        var t = this.tokens[1];
+        if (typeof t == 'undefined') {
+            this.tokens.push(this.getAToken());
+            t = this.tokens[1];
+        }
+        return t;
+    };
     Lexical.prototype.next = function () {
         var t = this.tokens.shift();
         if (typeof t == 'undefined') {
@@ -61,6 +69,12 @@ var Lexical = /** @class */ (function () {
             //6. Binary Operator: *
             else if (ch == "*") {
                 return this.parseBinOP_Multi();
+            }
+            //7. assignment: =
+            //TODO: ==, ===, =>. 
+            else if (ch == "=") {
+                this.stream.next();
+                return { kind: Token_1.TokenKind.Operator, text: '=' };
             }
             else {
                 console.log("[!!!!] unknow pattern meeting: " + ch);
@@ -137,7 +151,7 @@ var Lexical = /** @class */ (function () {
         while (this.isIdentifier(this.stream.peek()) && !this.stream.eof()) {
             token.text += this.stream.next();
         }
-        //
+        // 是否为关键字
         if (Lexical.KeyWords.has(token.text)) {
             token.kind = Token_1.TokenKind.KeyWord;
         }
@@ -163,18 +177,19 @@ var Lexical = /** @class */ (function () {
         return (ch == ' ') || (ch == '\t') || (ch == '\n');
     };
     Lexical.prototype.isLetter = function (ch) {
-        return (ch > 'A' && ch < 'Z') || (ch > 'a' && ch < 'z');
+        return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
     };
     Lexical.prototype.isDigit = function (ch) {
-        return (ch > '0' && ch < '9');
+        return (ch >= '0' && ch <= '9');
     };
+    // 字母数字下划线
     Lexical.prototype.isIdentifier = function (ch) {
         return this.isLetter(ch) || this.isDigit(ch) || ch == '_';
     };
     Lexical.prototype.isSeperators = function (ch) {
-        return ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == ',' || ch == ';';
+        return ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == ',' || ch == ';' || ch == ":";
     };
-    Lexical.KeyWords = new Set(["function"]);
+    Lexical.KeyWords = new Set(["function", "let"]);
     return Lexical;
 }());
 exports.Lexical = Lexical;

@@ -7,7 +7,7 @@ export class Lexical {
     stream: CharStream;
 
     private static KeyWords:Set<string> = new Set(
-        ["function"]
+        ["function", "let"]
     );
 
     constructor(stream:CharStream){
@@ -21,6 +21,16 @@ export class Lexical {
            t = this.getAToken();
            this.tokens.push(t);
        }
+        return t;
+    }
+
+    public peek2():Token {
+        let t:Token|undefined = this.tokens[1];
+        if (typeof t == 'undefined')
+        {
+            this.tokens.push(this.getAToken());
+            t = this.tokens[1];
+        }
         return t;
     }
 
@@ -84,6 +94,15 @@ export class Lexical {
             {
                 return this.parseBinOP_Multi();
             }
+
+            //7. assignment: =
+            //TODO: ==, ===, =>. 
+            else if (ch == "=")
+            {
+                this.stream.next();
+                return {kind:TokenKind.Operator, text: '='};
+            }
+
             else
             {
                 console.log("[!!!!] unknow pattern meeting: "+ ch);
@@ -172,7 +191,7 @@ export class Lexical {
         {
             token.text += this.stream.next();
         }
-        //
+        // 是否为关键字
         if (Lexical.KeyWords.has(token.text))
         {
             token.kind = TokenKind.KeyWord;
@@ -206,19 +225,20 @@ export class Lexical {
     }
 
     public isLetter(ch:string):boolean {
-        return (ch > 'A'&& ch <'Z') || (ch >'a' && ch<'z');
+        return (ch >= 'A'&& ch <='Z') || (ch >='a' && ch<='z');
     }
 
     public isDigit(ch:string):boolean {
-        return (ch>'0'&&ch<'9');
+        return (ch>='0'&&ch<='9');
     }
 
+    // 字母数字下划线
     public isIdentifier(ch:string):boolean {
         return this.isLetter(ch)||this.isDigit(ch)||ch == '_';
     }
 
     public isSeperators(ch:string):boolean {
-        return ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == ',' || ch == ';';
+        return ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == ',' || ch == ';'|| ch == ":";
     }
 }
 

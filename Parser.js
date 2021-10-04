@@ -3,7 +3,6 @@ exports.__esModule = true;
 exports.Parser = void 0;
 var Token_1 = require("./Token");
 var FunctionDecl_1 = require("./AST/FunctionDecl");
-var FunctionBody_1 = require("./AST/FunctionBody");
 var FunctionCall_1 = require("./AST/FunctionCall");
 var IntegerLiteral_1 = require("./AST/IntegerLiteral");
 var Prog_1 = require("./AST/Prog");
@@ -11,6 +10,7 @@ var BinaryExp_1 = require("./AST/BinaryExp");
 var ExpressionStatement_1 = require("./AST/ExpressionStatement");
 var VariableDecl_1 = require("./AST/VariableDecl");
 var Variable_1 = require("./AST//Variable");
+var Block_1 = require("./AST/Block");
 /**
  *  @version: 0.2
  *
@@ -47,42 +47,44 @@ var Parser = /** @class */ (function () {
      */
     Parser.prototype.parseProg = function () {
         console.log("\t Parsing ...\n");
+        return new Prog_1.Prog(this.parseStatementList());
+    };
+    /**
+     *  Collect Statement List
+     *
+     */
+    Parser.prototype.parseStatementList = function () {
         var stmts = [];
-        var stmt = null;
-        var token = this.tokenizer.peek();
-        while (token.kind != Token_1.TokenKind.EOF && token.text != '}') {
-            console.log("[start]...");
-            console.log(this.tokenizer.peek());
-            var stmt_1 = this.parsingStatement();
-            if (stmt_1 != null) {
-                stmts.push(stmt_1);
+        var t = this.tokenizer.peek();
+        while (t.kind != Token_1.TokenKind.EOF && t.text != "}") {
+            console.log("[Starting to parsing...]");
+            var stmt = this.parseStatement();
+            if (stmt != null) {
+                stmts.push(stmt);
             }
             else {
-                console.log("[!] No tokens\n");
-                //process.exit(0);
                 return null;
             }
-            token = this.tokenizer.peek();
+            t = this.tokenizer.peek();
+            console.log("~~~~~~~~~~~");
+            console.log(t);
         }
-        return new Prog_1.Prog(stmts);
+        return stmts;
     };
     /**
      * Parsing Statement
      * stmt :=  FunctionCall|FuntctionDecl|ExpressionStmt|AssigmentStmt.
      * @returns
      */
-    Parser.prototype.parsingStatement = function () {
+    Parser.prototype.parseStatement = function () {
+        var stmts = [];
         var token = this.tokenizer.peek();
-        var stmt;
         // parsing FunctionDecl
         if (token.kind == Token_1.TokenKind.KeyWord && token.text == "function") // match the functionDecl KeyWord
          {
             console.log("[!] Begin to parse function Decl...");
-            stmt = this.parseFunctionDecl();
+            return this.parseFunctionDecl();
             //stmt.dump("-------> function decl ------> ");
-            if (stmt != null) {
-                return stmt;
-            }
         }
         // parsing VariableDecl
         else if (token.kind == Token_1.TokenKind.KeyWord && token.text == "let") {
@@ -151,7 +153,6 @@ var Parser = /** @class */ (function () {
         if (exp != null) {
             var t = this.tokenizer.peek();
             if (t.text == ";") {
-                console.log(t); //如果找到了；，就封装表达式语句
                 this.tokenizer.next();
                 return new ExpressionStatement_1.ExpressionStatement(exp);
             }
@@ -160,6 +161,7 @@ var Parser = /** @class */ (function () {
                 process.exit(1);
             }
         }
+        return null;
     };
     // expression := binaryExp
     Parser.prototype.parseExpression = function () {
@@ -223,6 +225,7 @@ var Parser = /** @class */ (function () {
         if (t.kind == Token_1.TokenKind.Identifier) {
             if (this.tokenizer.peek2().text == '(') {
                 console.log("function call.........");
+                console.log(this.tokenizer.peek());
                 return this.parseFunctionCall();
             }
             else {
@@ -262,7 +265,7 @@ var Parser = /** @class */ (function () {
                     t2 = this.tokenizer.next();
                 }
                 if (t2.text == ")") {
-                    this.tokenizer.next(); // 过掉 ;
+                    //this.tokenizer.next(); // 推掉分号
                     return new FunctionCall_1.FunctionCall(t.text, params);
                 }
             }
@@ -278,7 +281,7 @@ var Parser = /** @class */ (function () {
         var function_decl;
         console.log("[+] fucntion name: " + t.text);
         var t1 = this.tokenizer.next();
-        console.log(t1); //"("
+        //console.log(t1); //"("
         if (t1.text == "(") // match
          {
             // 当前无参数，跳过解析parameterList
@@ -297,19 +300,15 @@ var Parser = /** @class */ (function () {
      *  functionBody ::= "{" functionCall* "}".
      */
     Parser.prototype.parseFunctionBody = function () {
-        console.log("[!] Begin to parse function body...\n");
-        var t1 = this.tokenizer.next();
-        var stmts = [];
-        if (t1.text == "{") {
-            // 开始递归下降解析body内的stmts(目前只有call)
-            console.log("[!] Begin to parse function call...\n");
-            var function_call = this.parseFunctionCall();
-            if (function_call != null) {
-                stmts.push(function_call);
-            }
+        var t = this.tokenizer.peek(); // "{" 进
+        if (t.text == "{") {
+            this.tokenizer.next(); //"{" => stmtList
+            //let function_call = this.parseFunctionCall();
+            var stmts = this.parseStatementList();
+            console.log(stmts);
+            t = this.tokenizer.next();
+            return new Block_1.Block(stmts);
         }
-        this.tokenizer.next(); // 吃掉 }
-        return new FunctionBody_1.FunctionBody(stmts);
     };
     Parser.prototype.getPrec = function (op) {
         var ret = this.op_prec.get(op);

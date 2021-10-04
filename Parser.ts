@@ -11,6 +11,7 @@ import {BinaryExp} from "./AST/BinaryExp";
 import {ExpressionStatement} from "./AST/ExpressionStatement";
 import { variableDecl } from "./AST/VariableDecl";
 import { Variable } from "./AST//Variable";
+import { Block } from "./AST/Block";
 
 /**
  *  @version: 0.2
@@ -45,52 +46,54 @@ export class Parser {
      */
     public parseProg():Prog{
         console.log("\t Parsing ...\n");
+        return new Prog(this.parseStatementList());
+    }
+
+
+    /**
+     *  Collect Statement List
+     * 
+     */
+    parseStatementList():Statement[]{
         let stmts: Statement[] = [];
-        let stmt: Statement|null = null;
+        let t = this.tokenizer.peek();
 
-        let token = this.tokenizer.peek();
-
-        while(token.kind != TokenKind.EOF && token.text != '}')
+        while (t.kind != TokenKind.EOF && t.text != "}") 
         {
-            console.log("[start]...");
-            console.log(this.tokenizer.peek());
+            console.log("[Starting to parsing...]")
+            let stmt = this.parseStatement();
 
-            let stmt = this.parsingStatement();
             if (stmt != null)
             {
                 stmts.push(stmt);
             }
             else
             {
-                console.log("[!] No tokens\n");    
-                //process.exit(0);
                 return null;
             }
-
-            token = this.tokenizer.peek();
+            t = this.tokenizer.peek();
+            console.log("~~~~~~~~~~~");
+            console.log(t);
         }
-        return new Prog(stmts);
+
+        return stmts;
     }
 
-
+    
     /**
      * Parsing Statement
      * stmt :=  FunctionCall|FuntctionDecl|ExpressionStmt|AssigmentStmt.
      * @returns 
      */
-    parsingStatement():Statement|null {
+    parseStatement():Statement|null {
+        let stmts: Statement[] = [];
         let token = this.tokenizer.peek();
-        let stmt:Statement;
         // parsing FunctionDecl
         if (token.kind == TokenKind.KeyWord && token.text == "function") // match the functionDecl KeyWord
         {
             console.log("[!] Begin to parse function Decl...");            
-            stmt = this.parseFunctionDecl();
+            return this.parseFunctionDecl();
             //stmt.dump("-------> function decl ------> ");
-
-            if (stmt!=null) {
-                return stmt;
-            }
         }
         // parsing VariableDecl
         else if (token.kind == TokenKind.KeyWord && token.text == "let")
@@ -165,6 +168,7 @@ export class Parser {
         }
     }
 
+
     // expressionStmt := (expression)+;.
     public parseExpressionStmt():ExpressionStatement|null {
         console.log("[!] Parsing Expression stmts...");
@@ -175,7 +179,6 @@ export class Parser {
             let t = this.tokenizer.peek();
             if (t.text == ";")
             {
-                console.log(t); //如果找到了；，就封装表达式语句
                 this.tokenizer.next();
                 return new ExpressionStatement(exp);
             }
@@ -185,6 +188,7 @@ export class Parser {
                 process.exit(1);
             }
         }
+        return null;
     }
 
 
@@ -263,6 +267,7 @@ export class Parser {
             if (this.tokenizer.peek2().text == '(')
             {
                 console.log("function call.........");
+                console.log(this.tokenizer.peek());
                 return this.parseFunctionCall();
             }
             else
@@ -295,8 +300,7 @@ export class Parser {
      */
     public parseFunctionCall():FunctionCall{
         let params:string[] = [];
-        let t = this.tokenizer.next();    
-
+        let t = this.tokenizer.next();   
         // 发现call
         if (t.kind == TokenKind.Identifier)
         {
@@ -305,14 +309,16 @@ export class Parser {
             {
                 // 解析parameter list
                 let t2 = this.tokenizer.next();
+
                 if (t2.kind == TokenKind.StringLiteral)
                 {
                     params.push(t2.text);
                     t2 = this.tokenizer.next();
                 }
+
                 if (t2.text == ")")
                 {
-                    this.tokenizer.next(); // 过掉 ;
+                    //this.tokenizer.next(); // 推掉分号
                     return new FunctionCall(t.text, params);
                 }
             }
@@ -331,7 +337,7 @@ export class Parser {
         console.log("[+] fucntion name: "+t.text);
 
         let t1 = this.tokenizer.next();
-        console.log(t1); //"("
+        //console.log(t1); //"("
         if (t1.text == "(") // match
         {
             // 当前无参数，跳过解析parameterList
@@ -354,24 +360,18 @@ export class Parser {
      *  Parsing FunctionBody
      *  functionBody ::= "{" functionCall* "}".
      */
-    public parseFunctionBody():FunctionBody {
-        console.log("[!] Begin to parse function body...\n");
-        let t1 = this.tokenizer.next();
-        let stmts:FunctionCall[] = [];
-
-        if (t1.text == "{")
+    public parseFunctionBody(): Block|null {
+        let t = this.tokenizer.peek(); // "{" 进
+        if (t.text == "{")
         {
-            // 开始递归下降解析body内的stmts(目前只有call)
-            console.log("[!] Begin to parse function call...\n");
-            let function_call = this.parseFunctionCall();
-            if (function_call != null)
-            {
-                stmts.push(function_call);
-            }
+            this.tokenizer.next(); //"{" => stmtList
+            //let function_call = this.parseFunctionCall();
+            let stmts = this.parseStatementList();
+            console.log(stmts);
+            t= this.tokenizer.next();
+            return new Block(stmts);
         }
 
-        this.tokenizer.next();// 吃掉 }
-        return new FunctionBody(stmts);
     }
 
 

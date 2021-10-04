@@ -15,20 +15,20 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.FunctionDecl = void 0;
-var DEcl_1 = require("./DEcl");
-// functionDecl ::= KeyWord Identifier (parameterList?) functionBody
-var FunctionDecl = /** @class */ (function (_super) {
-    __extends(FunctionDecl, _super);
-    function FunctionDecl(name, body) {
-        var _this = _super.call(this, name) || this;
-        _this.body = body;
+exports.Block = void 0;
+var ASTNode_1 = require("./ASTNode");
+// statement list
+var Block = /** @class */ (function (_super) {
+    __extends(Block, _super);
+    function Block(stmts) {
+        var _this = _super.call(this) || this;
+        _this.stmts = stmts;
         return _this;
     }
-    FunctionDecl.prototype.dump = function (prefix) {
-        console.log(prefix + "FunctionDecl: " + this.name);
-        this.body.dump(prefix + "\t");
+    Block.prototype.dump = function (prefix) {
+        console.log(prefix + "Block");
+        this.stmts.forEach(function (x) { return x.dump(prefix + "  "); });
     };
-    return FunctionDecl;
-}(DEcl_1.Decl));
-exports.FunctionDecl = FunctionDecl;
+    return Block;
+}(ASTNode_1.ASTNode));
+exports.Block = Block;

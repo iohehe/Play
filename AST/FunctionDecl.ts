@@ -1,6 +1,6 @@
-import {Decl} from "./DEcl";
-import {FunctionBody} from "./FunctionBody";
-import {Block} from "./Block";
+import { Decl } from "./Decl";
+import { Block } from "./Block";
+import { ASTVisitor } from "../Semantic/ASTVisitor";
 
 // functionDecl ::= KeyWord Identifier (parameterList?) functionBody
 export class FunctionDecl extends Decl {
@@ -16,5 +16,9 @@ export class FunctionDecl extends Decl {
         console.log(prefix + "FunctionDecl: " + this.name);
 
         this.body.dump(prefix+"\t");
+    }
+
+    public accept(visitor:ASTVisitor):any {
+        return visitor.visitFunctionDecl(this);
     }
 }

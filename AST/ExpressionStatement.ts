@@ -1,5 +1,6 @@
 import{Expression} from "./Expression";
 import {Statement} from "./Statement";
+import {ASTVisitor} from "../Semantic/ASTVisitor";
 
 
 export class ExpressionStatement extends Statement {
@@ -14,4 +15,9 @@ export class ExpressionStatement extends Statement {
         console.log(prefix + "ExpressionStatement");
         this.exp.dump(prefix+ "     ");
     }
+
+    public accept(visitor:ASTVisitor):any {
+        return visitor.visitExpressionStatement(this);
+    }
 }
+

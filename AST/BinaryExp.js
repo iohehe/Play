@@ -31,6 +31,9 @@ var BinaryExp = /** @class */ (function (_super) {
         this.exp1.dump(prefix + "     ");
         this.exp2.dump(prefix + "     ");
     };
+    BinaryExp.prototype.accept = function (visitor) {
+        return visitor.visitBinary(this);
+    };
     return BinaryExp;
 }(Expression_1.Expression));
 exports.BinaryExp = BinaryExp;

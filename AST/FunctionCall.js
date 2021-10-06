@@ -16,21 +16,24 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 exports.FunctionCall = void 0;
-var Statement_1 = require("./Statement");
+var ASTNode_1 = require("./ASTNode");
 // FunctionCall ::= Identitifer "(" parameterList? ")"
 var FunctionCall = /** @class */ (function (_super) {
     __extends(FunctionCall, _super);
     function FunctionCall(name, parameters) {
         var _this = _super.call(this) || this;
-        _this.definition = null;
+        _this.decl = null;
         _this.name = name;
         _this.parameters = parameters;
         return _this;
     }
     FunctionCall.prototype.dump = function (prefix) {
-        console.log(prefix + "FunctionCall " + this.name + (this.definition != null ? ", resolved" : ", not resolved"));
+        console.log(prefix + "FunctionCall " + this.name + (this.decl != null ? ", resolved" : ", not resolved"));
         this.parameters.forEach(function (x) { return console.log(prefix + "\t" + "Parameter: " + x); });
     };
+    FunctionCall.prototype.accept = function (visitor) {
+        return visitor.visitFunctionCall(this);
+    };
     return FunctionCall;
-}(Statement_1.Statement));
+}(ASTNode_1.ASTNode));
 exports.FunctionCall = FunctionCall;

@@ -1,12 +1,13 @@
+import { ASTVisitor } from "../Semantic/ASTVisitor";
 import {Expression} from "./Expression";
-import { variableDecl } from "./VariableDecl";
+import { VariableDecl } from "./VariableDecl";
 
 /**
  *  变量引用
  */
 export class Variable extends Expression {
     name: string;
-    decl: variableDecl|null=null;
+    decl: VariableDecl|null=null;
 
     constructor(name: string) {
         super();
@@ -15,5 +16,9 @@ export class Variable extends Expression {
 
     public dump(prefix: string): void {
         console.log(prefix + "Variable: " + this.name + (this.decl != null ?  ", resolved" : ", not resolved"));
+    }
+
+    public accept(visitor: ASTVisitor):any {
+        return visitor.visitVariable(this);
     }
 }

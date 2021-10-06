@@ -1,3 +1,4 @@
+import { ASTVisitor } from "../Semantic/ASTVisitor";
 import { Expression } from "./Expression";
 
 export class BinaryExp extends Expression {
@@ -16,5 +17,9 @@ export class BinaryExp extends Expression {
         console.log(prefix + "Binary: "+ this.op);
         this.exp1.dump(prefix + "     ");
         this.exp2.dump(prefix + "     ");
+    }
+
+    public accept(visitor:ASTVisitor):any {
+        return visitor.visitBinary(this);
     }
 }

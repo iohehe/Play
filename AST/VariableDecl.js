@@ -15,21 +15,21 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.variableDecl = void 0;
+exports.VariableDecl = void 0;
 var Decl_1 = require("./Decl");
 /**
  *  变量声明节点
  *  记录变量名，类型和初始值
  */
-var variableDecl = /** @class */ (function (_super) {
-    __extends(variableDecl, _super);
-    function variableDecl(name, var_type, init) {
+var VariableDecl = /** @class */ (function (_super) {
+    __extends(VariableDecl, _super);
+    function VariableDecl(name, var_type, init) {
         var _this = _super.call(this, name) || this;
         _this.var_type = var_type;
         _this.init = init;
         return _this;
     }
-    variableDecl.prototype.dump = function (prefix) {
+    VariableDecl.prototype.dump = function (prefix) {
         console.log(prefix + "VariableDecl " + this.name + ", type: " + this.var_type);
         if (this.init == null) {
             console.log(prefix + "no initialization.");
@@ -38,6 +38,9 @@ var variableDecl = /** @class */ (function (_super) {
             this.init.dump(prefix + "   ");
         }
     };
-    return variableDecl;
+    VariableDecl.prototype.accept = function (visitor) {
+        visitor.visitVariableDecl(this);
+    };
+    return VariableDecl;
 }(Decl_1.Decl));
-exports.variableDecl = variableDecl;
+exports.VariableDecl = VariableDecl;

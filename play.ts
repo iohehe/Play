@@ -1,6 +1,8 @@
 import {CharStream} from "./CharStream";
 import {Lexical} from "./Lexical";
 import {Parser} from "./Parser";
+import {SymTable} from "./Semantic/SymTable";
+import {Enter} from "./Semantic/Enter";
 
 
 function compileAndRun(program:string) {
@@ -27,20 +29,22 @@ function compileAndRun(program:string) {
     // Syntax Analysis
     let tokenizer = new Lexical(new CharStream(program));
     let prog = new Parser(tokenizer).parseProg();
-
     prog.dump("~~~~.>:");
 
     // Semantic Analysis
-    //new RefResolver().visitProg(prog);
+    //建立符号表
+    let sym_table = new SymTable();
+    // console.log(sym_table);
+    new Enter(sym_table).visit(prog);
+    new RefResolver(sym_table).visit(prog);
+    prog.dump("-------...>>4>>>> ");
     //prog.dump("---------..>:");
 }
 
 
-
 // 读文件 
 import * as process from 'process'
-import { TokenKind } from "./Token";
-import { exit } from "process";
+import { RefResolver } from "./Semantic/RefResolver";
 
 if (process.argv.length<3)
 {

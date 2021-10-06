@@ -1,71 +1,44 @@
+import {ASTVisitor} from "./ASTVisitor";
+import { SymKind, SymTable } from "./SymTable";
+import {Variable} from "../AST/Variable";
+import { VariableDecl } from "../AST/VariableDecl";
 import { FunctionCall } from "../AST/FunctionCall";
 import { FunctionDecl } from "../AST/FunctionDecl";
-import { FunctionBody } from "../AST/FunctionBody";
-
-import {Prog} from "../AST/Prog";
-import {ASTVisitor} from "./ASTVisitor";
 
 export class RefResolver extends ASTVisitor {
-    prog: Prog|null = null;
-
-    visitProg(prog:Prog):void {
-        console.log("Begin to dereference...");
-
-        this.prog = prog;
-        for (let x of prog.stmts) 
-        {
-            let function_call = x as FunctionCall;
-            if (typeof function_call.parameters === 'object')
-            {
-                this.resolveFunctionCall(prog, function_call);
-            }
-            else
-            {
-                this.visitFunctionDecl(x as FunctionDecl);
-            }
-
-        }
-
+    sym_table:SymTable;
+    
+    constructor(sym_table:SymTable) {
+        super();
+        console.log("~~~~~~~~~~~~~~~~~~~~~~>>>");
+        console.log(sym_table);
+        this.sym_table = sym_table;
     }
 
-    visitFunctionBody(function_body: FunctionBody): any {
-        if (this.prog != null)
-        {
-            for (let x of function_body.stmts) 
-            {
-                return this.resolveFunctionCall(this.prog, x);
-            }
-        }
-    }
+    // 引用消解
+    // 重写visitVariable
+    visitVariable(variable: Variable):any {
+        let sym = this.sym_table.getSymbol(variable.name); // 从符号表找当前变量标识 
 
-    private resolveFunctionCall(prog:Prog, function_call:FunctionCall) {
-        let function_decl = this.findFunctionDecl(prog, function_call.name);
-        if (function_decl != null)
+        if (sym != null && sym.kind == SymKind.Variable)
         {
-            function_call.definition = function_decl;
+            console.log("[Boom] variable: "+variable.name+ " 解引用成功");
+            variable.decl = sym.decl as VariableDecl;
         }
         else
         {
-            if (function_call.name != "println") //非系统函数， 又解不了引用的
-            {
-                console.log("NameError: function "+function_call.name+" not found");
-                process.exit(0);
-            }
+            console.log("[Error]: cannot find declaration of variable" + variable.name);
         }
     }
 
 
-    // find function decl : 由resolve call时调用,在整个prog中找decl
-    private findFunctionDecl(prog:Prog, name:string):FunctionDecl|null {
-        for (let x of prog?.stmts) // 搜索prog中所有的stmt
-        {
-            let function_decl = x as FunctionDecl;  //找到属于functino decl的
-            if (typeof function_decl.body == 'object' && function_decl.name == name) //有函数体，且名称与callname相同的fcuntiondecl
-            {
-                return function_decl;
-            }
-        }
-        return null; //没有找到对应的函数体
-    } 
+    visitFunctionCall(function_call: FunctionCall):any {
+        let sym = this.sym_table.getSymbol(function_call.name);
 
+        if (sym != null && sym.kind == SymKind.Function)
+        {
+            console.log("[Boom] function: "+function_call.name+ " 解引用成功");
+            function_call.decl = sym.decl as FunctionDecl;
+        }
+    }
 }

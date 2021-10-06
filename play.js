@@ -3,6 +3,8 @@ exports.__esModule = true;
 var CharStream_1 = require("./CharStream");
 var Lexical_1 = require("./Lexical");
 var Parser_1 = require("./Parser");
+var SymTable_1 = require("./Semantic/SymTable");
+var Enter_1 = require("./Semantic/Enter");
 function compileAndRun(program) {
     console.log("resource:");
     console.log(program);
@@ -25,11 +27,17 @@ function compileAndRun(program) {
     var prog = new Parser_1.Parser(tokenizer).parseProg();
     prog.dump("~~~~.>:");
     // Semantic Analysis
-    //new RefResolver().visitProg(prog);
+    //建立符号表
+    var sym_table = new SymTable_1.SymTable();
+    // console.log(sym_table);
+    new Enter_1.Enter(sym_table).visit(prog);
+    new RefResolver_1.RefResolver(sym_table).visit(prog);
+    prog.dump("-------...>>4>>>> ");
     //prog.dump("---------..>:");
 }
 // 读文件 
 var process = require("process");
+var RefResolver_1 = require("./Semantic/RefResolver");
 if (process.argv.length < 3) {
     console.log('Usage: node' + process.argv[1] + "File name");
     process.exit(1);

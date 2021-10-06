@@ -29,6 +29,9 @@ var Block = /** @class */ (function (_super) {
         console.log(prefix + "Block");
         this.stmts.forEach(function (x) { return x.dump(prefix + "  "); });
     };
+    Block.prototype.accept = function (visitor) {
+        return visitor.visitBlock(this);
+    };
     return Block;
 }(ASTNode_1.ASTNode));
 exports.Block = Block;

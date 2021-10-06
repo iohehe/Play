@@ -27,6 +27,9 @@ var IntegerLiteral = /** @class */ (function (_super) {
     IntegerLiteral.prototype.dump = function (prefix) {
         console.log(prefix + this.value);
     };
+    IntegerLiteral.prototype.accept = function (visitor) {
+        return visitor.visitIntegerLiteral(this);
+    };
     return IntegerLiteral;
 }(Expression_1.Expression));
 exports.IntegerLiteral = IntegerLiteral;

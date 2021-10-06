@@ -28,6 +28,9 @@ var ExpressionStatement = /** @class */ (function (_super) {
         console.log(prefix + "ExpressionStatement");
         this.exp.dump(prefix + "     ");
     };
+    ExpressionStatement.prototype.accept = function (visitor) {
+        return visitor.visitExpressionStatement(this);
+    };
     return ExpressionStatement;
 }(Statement_1.Statement));
 exports.ExpressionStatement = ExpressionStatement;

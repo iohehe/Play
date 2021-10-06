@@ -1,4 +1,5 @@
 
+import { ASTVisitor } from "../Semantic/ASTVisitor";
 import {Expression} from "./Expression";
 
 export class IntegerLiteral extends Expression {
@@ -12,4 +13,7 @@ export class IntegerLiteral extends Expression {
         console.log(prefix + this.value);
     }
 
+    public accept(visitor: ASTVisitor):any {
+        return visitor.visitIntegerLiteral(this);
+    }
 }

@@ -16,7 +16,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 exports.FunctionDecl = void 0;
-var DEcl_1 = require("./DEcl");
+var Decl_1 = require("./Decl");
 // functionDecl ::= KeyWord Identifier (parameterList?) functionBody
 var FunctionDecl = /** @class */ (function (_super) {
     __extends(FunctionDecl, _super);
@@ -29,6 +29,9 @@ var FunctionDecl = /** @class */ (function (_super) {
         console.log(prefix + "FunctionDecl: " + this.name);
         this.body.dump(prefix + "\t");
     };
+    FunctionDecl.prototype.accept = function (visitor) {
+        return visitor.visitFunctionDecl(this);
+    };
     return FunctionDecl;
-}(DEcl_1.Decl));
+}(Decl_1.Decl));
 exports.FunctionDecl = FunctionDecl;

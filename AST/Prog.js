@@ -16,21 +16,21 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 exports.Prog = void 0;
-var ASTNode_1 = require("./ASTNode");
+var Block_1 = require("./Block");
 // Prog ::= Statement+
 // Statement ::= FunctionDecl|FunctionCall
 var Prog = /** @class */ (function (_super) {
     __extends(Prog, _super);
-    function Prog(stmts) {
-        var _this = _super.call(this) || this;
-        _this.stmts = [];
-        _this.stmts = stmts;
-        return _this;
+    function Prog() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     Prog.prototype.dump = function (prefix) {
         console.log(prefix + "Prog");
         this.stmts.forEach(function (x) { return x.dump(prefix + "\t"); });
     };
+    Prog.prototype.accept = function (visitor) {
+        return visitor.visitProg(this);
+    };
     return Prog;
-}(ASTNode_1.ASTNode));
+}(Block_1.Block));
 exports.Prog = Prog;

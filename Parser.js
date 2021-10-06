@@ -138,7 +138,7 @@ var Parser = /** @class */ (function () {
             if (t1.text == ";") // stmt终结
              {
                 this.tokenizer.next(); //推过;
-                return new VariableDecl_1.variableDecl(var_name, var_type, init);
+                return new VariableDecl_1.VariableDecl(var_name, var_type, init);
             }
             else {
                 console.log("[SYNTAX ERROR] Excepting ; at the end of variable declaration, while we meet " + t1.text);
@@ -208,7 +208,7 @@ var Parser = /** @class */ (function () {
             return exp1;
         }
         else {
-            console.log("return null????");
+            console.log("Binary Exp return null????");
             return null;
         }
     };
@@ -259,15 +259,20 @@ var Parser = /** @class */ (function () {
             var t1 = this.tokenizer.next();
             if (t1.text == "(") {
                 // 解析parameter list
-                var t2 = this.tokenizer.next();
-                if (t2.kind == Token_1.TokenKind.StringLiteral) {
-                    params.push(t2.text);
-                    t2 = this.tokenizer.next();
+                t1 = this.tokenizer.peek();
+                while (t1.text != ")") {
+                    var exp = this.parseExpression();
+                    if (exp != null) //如果有arg表达式
+                     {
+                        params.push(exp);
+                    }
+                    else {
+                        return null;
+                    }
+                    t1 = this.tokenizer.peek();
                 }
-                if (t2.text == ")") {
-                    //this.tokenizer.next(); // 推掉分号
-                    return new FunctionCall_1.FunctionCall(t.text, params);
-                }
+                this.tokenizer.next(); //推掉)
+                return new FunctionCall_1.FunctionCall(t.text, params);
             }
         }
     };

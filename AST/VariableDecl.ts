@@ -1,3 +1,4 @@
+import { ASTVisitor } from "../Semantic/ASTVisitor";
 import {Decl} from "./Decl"
 import {Expression} from "./Expression"
 
@@ -5,7 +6,7 @@ import {Expression} from "./Expression"
  *  变量声明节点
  *  记录变量名，类型和初始值
  */
-export class variableDecl extends Decl {
+export class VariableDecl extends Decl {
     var_type: string;
     init: Expression|null;
     constructor(name, var_type:string, init:Expression|null) {
@@ -24,5 +25,9 @@ export class variableDecl extends Decl {
         {
             this.init.dump(prefix + "   ");
         }
+    }
+
+    public accept(visitor:ASTVisitor):any {
+        visitor.visitVariableDecl(this);
     }
 }

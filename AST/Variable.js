@@ -31,6 +31,9 @@ var Variable = /** @class */ (function (_super) {
     Variable.prototype.dump = function (prefix) {
         console.log(prefix + "Variable: " + this.name + (this.decl != null ? ", resolved" : ", not resolved"));
     };
+    Variable.prototype.accept = function (visitor) {
+        return visitor.visitVariable(this);
+    };
     return Variable;
 }(Expression_1.Expression));
 exports.Variable = Variable;

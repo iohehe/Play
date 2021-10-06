@@ -2,14 +2,13 @@ import {Lexical} from "./Lexical";
 import {Statement} from "./AST/Statement";
 import {TokenKind} from "./Token";
 import {FunctionDecl} from "./AST/FunctionDecl";
-import {FunctionBody} from "./AST/FunctionBody";
 import {FunctionCall} from "./AST/FunctionCall";
 import {Expression} from "./AST/Expression";
 import {IntegerLiteral} from "./AST/IntegerLiteral";
 import {Prog} from "./AST/Prog";
 import {BinaryExp} from "./AST/BinaryExp";
 import {ExpressionStatement} from "./AST/ExpressionStatement";
-import { variableDecl } from "./AST/VariableDecl";
+import { VariableDecl } from "./AST/VariableDecl";
 import { Variable } from "./AST//Variable";
 import { Block } from "./AST/Block";
 
@@ -158,7 +157,7 @@ export class Parser {
             if (t1.text == ";") // stmt终结
             {
                 this.tokenizer.next(); //推过;
-                return new variableDecl(var_name,var_type, init);
+                return new VariableDecl(var_name,var_type, init);
             }
             else
             {
@@ -245,7 +244,7 @@ export class Parser {
         }
         else
         {
-            console.log("return null????");
+            console.log("Binary Exp return null????");
             return null;
         }
     }
@@ -299,28 +298,32 @@ export class Parser {
      *  paramenterList ::= StringLiteral (',' StringLiteral)*.
      */
     public parseFunctionCall():FunctionCall{
-        let params:string[] = [];
+        let params:Expression[] = [];
         let t = this.tokenizer.next();   
         // 发现call
         if (t.kind == TokenKind.Identifier)
         {
             let t1 = this.tokenizer.next();
+
             if (t1.text == "(") 
             {
                 // 解析parameter list
-                let t2 = this.tokenizer.next();
-
-                if (t2.kind == TokenKind.StringLiteral)
+                t1 = this.tokenizer.peek();
+                while(t1.text != ")")
                 {
-                    params.push(t2.text);
-                    t2 = this.tokenizer.next();
+                    let exp = this.parseExpression();
+                    if (exp != null) //如果有arg表达式
+                    {
+                        params.push(exp);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                    t1 = this.tokenizer.peek();
                 }
-
-                if (t2.text == ")")
-                {
-                    //this.tokenizer.next(); // 推掉分号
-                    return new FunctionCall(t.text, params);
-                }
+                this.tokenizer.next(); //推掉)
+                return new FunctionCall(t.text, params);
             }
         }
     }

@@ -18,8 +18,8 @@ Play is a tiny language for me to learn PL. It is just a private pratice languag
     Let your language support expression, there would be use operator-precedence parser to reslove this problem(https://en.wikipedia.org/wiki/Operator-precedence_parser).
     [TEST CAST]
     ```
-		1+2+3;
-        2+3+5;
+	1+2+3;    // (+ (+ 1 2) 3)
+        2+3*5;    // (+ 2 (* 3 5))
     ```
 
 ### Level 3: Variable Declare and Assignment Statement
@@ -30,7 +30,7 @@ Play is a tiny language for me to learn PL. It is just a private pratice languag
 	```
 
 
-### Level 4: Sysmbol Table
+### Level 4: Symbol Table
 	Lead into sysmbol table
 	[TEST CASE]    
 	```

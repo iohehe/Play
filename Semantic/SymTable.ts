@@ -76,4 +76,5 @@ class Symbol {
 
 /** 
  *  把符号插入到符号表的过程，本质上还是一个AST遍历
+ *  Enter.ts
 */

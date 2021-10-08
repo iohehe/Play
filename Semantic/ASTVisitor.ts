@@ -6,6 +6,7 @@ import { FunctionCall } from "../AST/FunctionCall";
 import { FunctionDecl } from "../AST/FunctionDecl";
 import { VariableDecl } from "../AST/VariableDecl";
 import { IntegerLiteral } from "../AST/IntegerLiteral";
+import { StringLiteral } from "../AST/StringLiteral";
 import { Prog } from "../AST/Prog";
 import { Variable } from "../AST/Variable";
 
@@ -60,6 +61,10 @@ export abstract class ASTVisitor {
 
     // 终结点返回值
     visitIntegerLiteral(exp: IntegerLiteral):any {
+        return exp.value;
+    }
+
+    visitStringLiteral(exp: StringLiteral):any {
         return exp.value;
     }
 

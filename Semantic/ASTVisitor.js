@@ -51,6 +51,9 @@ var ASTVisitor = /** @class */ (function () {
     ASTVisitor.prototype.visitFunctionCall = function (function_call) {
         return undefined;
     };
+    ASTVisitor.prototype.visitStringLiteral = function (exp) {
+        return exp.value;
+    };
     return ASTVisitor;
 }());
 exports.ASTVisitor = ASTVisitor;

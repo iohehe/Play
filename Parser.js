@@ -5,6 +5,7 @@ var Token_1 = require("./Token");
 var FunctionDecl_1 = require("./AST/FunctionDecl");
 var FunctionCall_1 = require("./AST/FunctionCall");
 var IntegerLiteral_1 = require("./AST/IntegerLiteral");
+var StringLiteral_1 = require("./AST/StringLiteral");
 var Prog_1 = require("./AST/Prog");
 var BinaryExp_1 = require("./AST/BinaryExp");
 var ExpressionStatement_1 = require("./AST/ExpressionStatement");
@@ -208,7 +209,10 @@ var Parser = /** @class */ (function () {
             return exp1;
         }
         else {
+            console.log("~~~~~~~~");
+            console.log(this.tokenizer.peek());
             console.log("Binary Exp return null????");
+            process.exit(1);
             return null;
         }
     };
@@ -240,6 +244,10 @@ var Parser = /** @class */ (function () {
             return new IntegerLiteral_1.IntegerLiteral(parseInt(t.text));
         }
         // TODO: decimal & string & ()
+        else if (t.kind == Token_1.TokenKind.StringLiteral) {
+            this.tokenizer.next();
+            return new StringLiteral_1.StringLiteral(t.text); // get a new string literal ASTNode
+        }
         else {
             console.log("木有");
             console.log(t.text);

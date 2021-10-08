@@ -5,6 +5,7 @@ import {FunctionDecl} from "./AST/FunctionDecl";
 import {FunctionCall} from "./AST/FunctionCall";
 import {Expression} from "./AST/Expression";
 import {IntegerLiteral} from "./AST/IntegerLiteral";
+import { StringLiteral } from "./AST/StringLiteral";
 import {Prog} from "./AST/Prog";
 import {BinaryExp} from "./AST/BinaryExp";
 import {ExpressionStatement} from "./AST/ExpressionStatement";
@@ -244,7 +245,10 @@ export class Parser {
         }
         else
         {
+            console.log("~~~~~~~~");
+            console.log(this.tokenizer.peek());
             console.log("Binary Exp return null????");
+            process.exit(1);
             return null;
         }
     }
@@ -283,6 +287,11 @@ export class Parser {
             return new IntegerLiteral(parseInt(t.text)); 
         }
         // TODO: decimal & string & ()
+        else if (t.kind  == TokenKind.StringLiteral)
+        {
+            this.tokenizer.next();
+            return new StringLiteral(t.text); // get a new string literal ASTNode
+        }
         else
         {
             console.log("木有");

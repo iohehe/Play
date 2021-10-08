@@ -1,5 +1,7 @@
-## Play
-~~~~~~~~~~~~~~~~
+
+# Play
+__But it doesn't work now__ QAQ
+---
 Play is a tiny language for me to learn PL. It is just a private pratice language and I will complete it by many steps:
 ### Level0-1: Basic
 	0: Write a basic lexcial scanner and a sytax parse

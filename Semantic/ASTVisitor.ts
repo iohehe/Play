@@ -58,7 +58,6 @@ export abstract class ASTVisitor {
     }
 
 
-
     // 终结点返回值
     visitIntegerLiteral(exp: IntegerLiteral):any {
         return exp.value;

@@ -14,22 +14,33 @@ import { Variable } from "./AST//Variable";
 import { Block } from "./AST/Block";
 
 /**
- *  @version: 0.2
+ *  @version: 0.3
+ *  @level: 5
  * 
  *  Parser  
  * ~~~~~~~~~~~~~~~~~
  *  支持二元表达式解析
  *  prog := statementList? EOF.
- *  statementList := (functionDecl|expressionStatement)+.
- *  functionDecl := "function" Identifier "("")" functionBody.  //不支持传参数
- *  functionBody := "{" statementList? "}". //statementList 可选
- *  statement := functionDecl|expressionStatement.
+ *  variableDecl := Identifier typeAnnotation? ('=' expression)?.
+ *  functionDecl := 'function' Identifier callSignautre block.
+ *  callSignature := '(' parameterList? ')' typeAnnotation?.
+ *  parameterList := parameter (',' parameter)*.
+ *  typeAnnotation := ':' typeName.
+ *  functionCall := Identifier '(' argumentList? ')'.
+ *  argumentList := expression (',' expression).
+ *  statement := block|expressionStatement|returnStatement|variableStatement.
+ *  block := '{' statementList? '}'.
+ *  statementList := (variableDecl|functionDecl|expressionStatement)+
  *  expressionStatement := expression ';'.
  *  expression := primary (binOP primary)*.    // 表达式又一个基本数据类型，或者多个基础数据类型加二元表达式组合而成
- *  primary := StringLiteral | DecimalLiteral | IntegerLiteral | functionCall | '(' expression ')';  //基础数据类型 
- *  binOP := '+'|'-'|'*'|'/'|'='|'+='|'-='|'*='|'/='|'>'|'='|'<'|'>='|'=='|'<='|'!='|'&&'|'||'|....
- *  functionCall := Identifier '(' parameterList? ')'.
- *  parameterList := expression (',' expression)* .
+ *  expression := assignment.
+ *  assignment := binary (assignmentOp binary)*.
+ *  variableStatement := 'let' variableDecl ';'.
+ *  returnStatement := 'return' expression? ';'.
+ *  primary := StringLiteral | DecimalLiteral | IntegerLiteral | functionCall | '(' expression ')'.  //基础数据类型 
+ *  binary := unary (binOp unary)*.
+ *  assignmentOp := '='|'+='|'-='|'*='|'/='|
+ *  binOp := '+'|'-'|'*'|'/'|'>'|'<'|'>='|'=='|'<='|'!='|'&&'|'||'|!=|..
  */
 
 
@@ -340,16 +351,21 @@ export class Parser {
 
     /**
      *  Parsing FunctionDecl
-     *  functionDecl ::= KeyWord Identifier "(" parameterList? ")" functionBody.
+     *  functionDecl := KeyWord Identifier "(" parameterList? ")" functionBody.
+     * ~~~~~~~~~~~~~~ update in level5
+     *  functionDecl := 'function' Identifier callSignature '{' functionBody '}'.
+     *  callSignature := '(' parameterList? ')' typeAnnotation?.
+     *  parameterList :=  parameter (',' parameter+).
+     *  parameter : Identifier typeAnnotatin?.
+     *  returnStatement := 'return' expression? ';'.
      */
     public parseFunctionDecl():FunctionDecl{
         this.tokenizer.next(); // eat key word: function
         let t = this.tokenizer.next(); // function name
-        let function_decl:FunctionDecl;
-        console.log("[+] fucntion name: "+t.text);
 
+        console.log("[+] fucntion name: "+t.text);
+        // parsing callSignature
         let t1 = this.tokenizer.next();
-        //console.log(t1); //"("
         if (t1.text == "(") // match
         {
             // 当前无参数，跳过解析parameterList

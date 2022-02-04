@@ -1,0 +1,4 @@
+function foo(){
+    println("Hello World\n");
+}
+foo();

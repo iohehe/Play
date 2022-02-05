@@ -1,7 +1,57 @@
 import {CharStream, Scanner, TokenKind} from './scanner';
 import {Parser} from './parser';
-import {Prog, AstDumper} from './ast';
+import {Prog, AstDumper, ASTVisitor, Block, FunctionDecl, FunctionCall} from './ast';
 import {SemanticAnalyer} from './semantic';
+
+class Intepretor extends ASTVisitor {
+    // 调用栈
+    callStack: StackFrame[] = [];
+    // 当前栈帧
+    currentFrame: StackFrame;
+
+    constructor() {
+        super();
+        this.currentFrame = new StackFrame();
+        this.callStack.push(this.currentFrame);
+    }
+
+    /**
+     * 遍历一个块
+     * @param block 
+     * @returns 
+     */
+    visitBlock(block: Block):any {
+        let ret_val:any;
+        for (let x of block.stmts)
+        {
+            ret_val = this.visit(x);
+        }
+        return ret_val;
+    }
+
+    visitFunctionDecl(functionDecl: FunctionDecl):any {
+    }
+
+    /**
+     * 运行函数调用
+     * 原理： 根据函数定义，执行其函数体
+     * @param functionCall
+     */
+    visitFunctionCall(functionCall:FunctionCall):any {
+        if (functionCall.name == "println")
+        {
+        }
+
+        if (functionCall.sym != null)
+        {
+        }
+    }
+}
+
+class StackFrame {
+    values:Map<Symbol, any> = new Map();
+    ret_val = undefined;
+}
 
 function compileAndRun(file_name: string, program: string) {
     // 源代码 
@@ -23,6 +73,12 @@ function compileAndRun(file_name: string, program: string) {
     console.log("\n符号表");
     let ast_dumper = new AstDumper();
     ast_dumper.visit(prog, "");
+    // 程序运行
+    let ret_val = new Intepretor().visit(prog);
+
+    console.log("//////////////");
+    console.log(ret_val);
+    console.log("/////////////");
 }
 
 // 读取目标源码文件

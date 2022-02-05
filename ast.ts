@@ -195,7 +195,7 @@ export abstract class ASTVisitor {
     }
 
     visitExpressionStatement(stmt:ExpressionStatement, additional:any=undefined):any {
-        console.log("expression state");
+        console.log("expression state...");
         return this.visit(stmt.exp, additional);
     }
 
@@ -219,6 +219,7 @@ export abstract class ASTVisitor {
         for(let param of functionCall.arguments){
             this.visit(param, prefix+"    ");
         }
+        return undefined;
     }
 
     visitCallSignature(callSinature:CallSignature, additional:any=undefined):any{

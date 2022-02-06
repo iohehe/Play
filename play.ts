@@ -15,6 +15,20 @@ class Intepretor extends ASTVisitor {
         this.callStack.push(this.currentFrame);
     }
 
+    private pushFrame(frame:StackFrame) {
+        this.callStack.push(frame);
+        this.currentFrame = frame;
+    }
+
+    private popFrame() {
+        if (this.callStack.length>1)
+        {
+            let frame = this.callStack[this.callStack.length-2];
+            this.callStack.pop();
+            this.currentFrame = frame;
+        }
+    }
+
     /**
      * 遍历一个块
      * @param block 
@@ -38,12 +52,29 @@ class Intepretor extends ASTVisitor {
      * @param functionCall
      */
     visitFunctionCall(functionCall:FunctionCall):any {
+        console.log("黑人问号");
+        console.log(functionCall);
         if (functionCall.name == "println")
         {
+            console.log("内置函数运行!!!!!!");
         }
 
         if (functionCall.sym != null)
         {
+            console.log("用户函数运行!!!!");
+            this.currentFrame.ret_val = undefined; //清空返回值
+            // 1. 创建新的栈帧
+            let frame = new StackFrame();
+            // 2. 计算参数值，并保存到新创建的栈帧
+            let function_decl = functionCall.sym.decl as FunctionDecl;
+            // 3. 新栈帧入栈
+            this.pushFrame(frame);
+            // 4. 执行函数
+            this.visit(function_decl.body);
+            // 5. 弹出当前的栈帧
+            this.popFrame();
+            // 56. 函数的返回值
+            return this.currentFrame.ret_val;
         }
     }
 }

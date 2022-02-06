@@ -1,3 +1,4 @@
+import {Symbol, FunctionSymbol} from './symbol'
 import {Position, Op} from './scanner'
 
 export abstract class ASTNode {
@@ -88,6 +89,7 @@ export class Prog extends Block {
 export class FunctionDecl extends Decl {
     //callSignature:CallSignature;
     body:Block;
+    sym:FunctionSymbol|null=null;
     constructor(start_pos:Position, name:string, body:Block, isErrorNode:boolean=false) {
         super(start_pos, body.end_pos, name, isErrorNode);
         this.body = body;
@@ -146,6 +148,9 @@ export class ExpressionStatement extends Statement {
 export class FunctionCall extends Expression {
     name: string;
     arguments: Expression[];
+
+    // 加入符号系统
+    sym: FunctionSymbol|null = null;
     constructor(start_pos: Position, end_pos: Position, name:string, paramValues:Expression[], isErrorNode:boolean=false)
     {
         super(start_pos,end_pos, isErrorNode );

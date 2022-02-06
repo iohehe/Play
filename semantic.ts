@@ -1,4 +1,5 @@
-import {Prog, ASTVisitor, FunctionDecl} from './ast';
+import {Prog, ASTVisitor, FunctionDecl, FunctionCall} from './ast';
+import { FunctionSymbol, built_ins } from './symbol';
 
 export class SemanticAnalyer {
     // passes
@@ -32,9 +33,20 @@ class Enter extends SemanticASTVisitor {
 /**
  * 
  */
-class RefResolver extends SemanticASTVisitor {
-
+ class RefResolver extends SemanticASTVisitor{ 
     visitFunctionDecl(functionDecl:FunctionDecl):any {
         super.visitFunctionDecl(functionDecl);
+    }
+
+    visitFunctionCall(functionCall:FunctionCall):any {
+        if (built_ins.has(functionCall.name))
+        {
+            functionCall.sym = built_ins.get(functionCall.name) as FunctionSymbol;
+        }
+        else
+        {
+            //!!!!
+            functionCall.sym = new FunctionSymbol('foo');
+        }
     }
 }
